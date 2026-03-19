@@ -63,7 +63,15 @@ const CONFIG = {
   {dim:'souvenir',q:'여행 기념품으로 뭘 사올까요?',
     a:{emoji:'🧲',title:'그 도시 이름이 적힌 마그넷',desc:'냉장고에 붙일 때마다 그 순간이 떠오르는 것.',c:'#C4704B',bgUrl:'https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=600&h=800&fit=crop'},
     b:{emoji:'🍫',title:'현지 슈퍼에서 산 과자 한 봉지',desc:'아무도 모르는 이 맛을 내가 발견했다는 기쁨.',c:'#7A9A7E',bgUrl:'https://images.unsplash.com/photo-1499195333224-3ce974eecb47?w=600&h=800&fit=crop'}}
-],
+  ],
+
+  // 도시별 물가 지수 (1: 매우 저렴, 5: 매우 비쌈)
+  CITY_COSTS: {
+    'new_york': 5, 'london': 5, 'paris': 5, 'tokyo': 4, 'rome': 4, 'barcelona': 4,
+    'kyoto': 3, 'porto': 3, 'seoul': 3, 'prague': 3, 'prague': 3,
+    'bangkok': 2, 'da_nang': 1, 'taipei': 2, 'bali': 2, 'hanoi': 1,
+    'amsterdam': 4, 'vienna': 4, 'berlin': 3, 'osaka': 3, 'hong_kong': 4, 'singapore': 5
+  },
 
   CORE_DIMENSIONS: ['crowd','local','pace','accommodation','culture','night','local_life','dining','social','nature'],
 
@@ -89,6 +97,81 @@ const CONFIG = {
     {cond: s => s.pace==='b'  && s.night==='b', msg:'느린 하루와 호텔 TV 조합 — 여행을 "쉬는 것"으로 정의하는 분이네요.'},
     {cond: s => s.local==='b' && s.culture==='b', msg:'골목 빵집과 슈퍼마켓 탐방 동시 선택 — 소비보다 관찰에서 즐거움을 찾는 타입입니다.'},
     {cond: () => true, msg:'선택 패턴을 분석하고 있습니다. 직감적인 선택이 가장 정확한 취향 지도를 그립니다.'}
+  ],
+  // 아키타입 프리셋 정의
+  PRESETS: [
+    {
+      id: 'zen', emoji: '🧘', title: '고요한 힐러', 
+      desc: '복잡한 건 질색, 오롯이 나에게 집중하는 혼자만의 휴식',
+      visuals: { c1: '#2a1b32', c2: '#1b2a32', tex: 'v-tex-zen' },
+      profile: {
+        typeName: '내면을 채우는 고요한 힐러',
+        typeDesc: '북적이는 명소보다는 한적한 공원과 조용한 서점을 선호합니다. 느린 호흡으로 도심의 고요함을 즐기며, 완벽한 휴식과 재충전을 최우선으로 생각하는 타입입니다.',
+        keywords: ['슬로우 트래블', '명상적 산책', '한적한 서점', '테라피', '미니멀'],
+        dimensions: {
+          crowd: { score: 90, leftLabel: '활기', rightLabel: '고요' },
+          explore: { score: 15, leftLabel: '랜드마크', rightLabel: '뒷골목' },
+          pace: { score: 85, leftLabel: '빼곡한 일정', rightLabel: '느린 여행' },
+          immersion: { score: 40, leftLabel: '관광객', rightLabel: '현지인' }
+        },
+        idealTrip: '아침 일찍 문을 연 조용한 공원을 산책하고, 오후에는 아무도 모르는 골목 속 북카페에서 책을 읽으며 시간을 보냅니다. 저녁에는 은은한 조명의 재즈바에서 하루를 마무리하는 일정입니다.',
+        recommendCities: ['교토', '빈', '헬싱키']
+      }
+    },
+    {
+      id: 'local', emoji: '🌿', title: '로컬 감성러', 
+      desc: '여행지에서 살아보듯, 골목 사이 로컬만의 다정함',
+      visuals: { c1: '#2a2b1b', c2: '#2b211b', tex: 'v-tex-local' },
+      profile: {
+        typeName: '뒷골목을 누비는 로컬 감성러',
+        typeDesc: '유명 관광지보다는 현지인들의 일상이 묻어나는 시장과 카페를 좋아합니다. 낯선 도시에서 이방인이 아닌 주민이 된 듯한 기분을 즐기는 섬세한 여행자입니다.',
+        keywords: ['현지인 체험', '마켓 투어', '빈티지 샵', '골목 산책', '일상'],
+        dimensions: {
+          crowd: { score: 60, leftLabel: '활기', rightLabel: '고요' },
+          explore: { score: 85, leftLabel: '랜드마크', rightLabel: '뒷골목' },
+          pace: { score: 60, leftLabel: '빼곡한 일정', rightLabel: '느린 여행' },
+          immersion: { score: 95, leftLabel: '관광객', rightLabel: '현지인' }
+        },
+        idealTrip: '직접 장을 본 식재료로 아침을 해 먹고, 현지인들만 아는 오래된 레코드 샵과 빈티지 마켓을 구경합니다. 저녁에는 동네 작은 선술집에서 이웃들과 눈인사를 나누며 하루를 보냅니다.',
+        recommendCities: ['베를린', '포르투', '타이베이']
+      }
+    },
+    {
+      id: 'bold', emoji: '🏃', title: '열혈 탐험가', 
+      desc: '남는 건 사진뿐! 정복하듯 즐기는 고밀도 에너지 여행',
+      visuals: { c1: '#321b1b', c2: '#322a1b', tex: 'v-tex-bold' },
+      profile: {
+        typeName: '에너지가 넘치는 열혈 탐험가',
+        typeDesc: '한순간도 낭비하고 싶지 않은 열정적인 여행자입니다. 유명 랜드마크부터 숨은 스팟까지, 지도를 가득 채우며 성취감을 느끼는 활동적인 타입입니다.',
+        keywords: ['랜드마크 정복', '활동적인', '고밀도 일정', '인증샷', '성취감'],
+        dimensions: {
+          crowd: { score: 30, leftLabel: '활기', rightLabel: '고요' },
+          explore: { score: 40, leftLabel: '랜드마크', rightLabel: '뒷골목' },
+          pace: { score: 10, leftLabel: '빼곡한 일정', rightLabel: '느린 여행' },
+          immersion: { score: 20, leftLabel: '관광객', rightLabel: '현지인' }
+        },
+        idealTrip: '해 뜨기 전 명소에 도착해 가장 멋진 사진을 남기고, 오후에는 유명 박물관과 쇼핑가를 부지런히 누빕니다. 밤에는 도시의 가장 높은 전망대에서 화려한 야경을 감상합니다.',
+        recommendCities: ['뉴욕', '방콕', '파리']
+      }
+    },
+    {
+      id: 'flaneur', emoji: '🎞️', title: '도시의 산책자', 
+      desc: '계획 없음이 계획, 발길 닿는 대로 도시를 유영하기',
+      visuals: { c1: '#1b1b32', c2: '#1b3232', tex: 'v-tex-flaneur' },
+      profile: {
+        typeName: '자유를 즐기는 도시의 산책자',
+        typeDesc: '계획에 얽매이기보다 그날의 기분에 따라 발길을 옮깁니다. 도시의 공기와 소음, 우연히 만난 장면들에서 영감을 얻는 자유로운 영혼의 소유자입니다.',
+        keywords: ['자유로운', '도시 유영', '영감', '우연한 만남', '시티 라이프'],
+        dimensions: {
+          crowd: { score: 50, leftLabel: '활기', rightLabel: '고요' },
+          explore: { score: 50, leftLabel: '랜드마크', rightLabel: '뒷골목' },
+          pace: { score: 50, leftLabel: '빼곡한 일정', rightLabel: '느린 여행' },
+          immersion: { score: 50, leftLabel: '관광객', rightLabel: '현지인' }
+        },
+        idealTrip: '지도 없이 호텔을 나서서 예쁜 건물이 보이면 멈추고, 맛있는 냄새가 나면 들어가 식사를 합니다. 저녁에는 세느강변이나 광장에 앉아 버스킹 음악을 들으며 생각에 잠깁니다.',
+        recommendCities: ['파리', '바르셀로나', '싱가포르']
+      }
+    }
   ],
 
   CITY_DATA: {}, // Fetched via assets/cities
@@ -224,11 +307,6 @@ const UI = {
         ${bpd.entrance  ? `<div class="budget-card"><div class="budget-label">🎫 입장료</div><div class="budget-amount">₩${(bpd.entrance).toLocaleString()}</div><div class="budget-note">1인 · 하루</div></div>` : ''}
       </div>
       <div class="budget-total">
-        <span class="budget-total-label">${dur}일 총 예상 예산 (1인 기준)</span>
-        <span class="budget-total-amount">₩${(total).toLocaleString()}</span>
-      </div>
-      <div style="font-size:.72rem;color:var(--ink-faint);line-height:1.7;margin-top:1rem">
-        ※ 해당 예산은 항공권과 숙박비를 제외한 현지 체류비용의 추정치입니다.<br>
         실제 물가와 환율에 따라 차이가 발생할 수 있습니다.
       </div>`;
   }
@@ -246,8 +324,57 @@ const App = {
     window.scrollTo(0, 0);
   },
 
-  setProgress(p)   { document.getElementById('prog').style.width = p + '%'; },
-  setStep(label)   { document.getElementById('stepInd').textContent = label; },
+  setProgress(p) {
+    const el = document.getElementById('prog');
+    if (el) el.style.width = p + '%';
+    this._updateVisuals(p);
+  },
+
+  setStep(txt) {
+    const el = document.getElementById('stepInd');
+    if (el) el.textContent = txt;
+  },
+
+  _updateVisuals(p) {
+    const root = document.documentElement;
+    // p: 0 -> 100
+    // Blur: 60 -> 0
+    const blur = Math.max(0, 60 - (p * 0.6));
+    // Opacity: 0.1 -> 1.0
+    const opacity = 0.1 + (p * 0.009);
+    // Scale: 0.8 -> 1.1
+    const scale = 0.8 + (p * 0.003);
+
+    root.style.setProperty('--v-blur', `${blur}px`);
+    root.style.setProperty('--v-opacity', opacity);
+    root.style.setProperty('--v-scale', scale);
+
+    // 색상 및 텍스처 업데이트
+    if (AppState.currentProfile || AppState.presetId) {
+      const pId = AppState.presetId || this._guessArchetype();
+      const vis = CONFIG.PRESETS.find(pr => pr.id === pId)?.visuals || {c1:'#0d0d0d', c2:'#1a1a1a', tex:''};
+      root.style.setProperty('--v-c1', vis.c1);
+      root.style.setProperty('--v-c2', vis.c2);
+      
+      const bg = document.getElementById('vBackground');
+      if (bg) {
+        // 기존 텍스처 클래스 제거
+        bg.classList.remove('v-tex-zen', 'v-tex-bold', 'v-tex-local', 'v-tex-flaneur');
+        if (vis.tex) bg.classList.add(vis.tex);
+      }
+    }
+
+    // 펄스 효과 (중요 포인트에서)
+    const dna = document.getElementById('vDNA');
+    if (dna) {
+      dna.style.transition = 'all 0.4s ease';
+      dna.style.transform = `scale(${scale + 0.05}) translate(-50%, -50%)`;
+      setTimeout(() => {
+        dna.style.transition = 'all 1.2s cubic-bezier(0.22, 1, 0.36, 1)';
+        dna.style.transform = `scale(${scale}) translate(-50%, -50%)`;
+      }, 400);
+    }
+  },
 
   toast(msg) {
     const t = document.getElementById('shareToast');
@@ -262,15 +389,47 @@ const App = {
       <div class="intro-value">취향 기반 여행 큐레이션</div>
       <h1>당신의 <em>여행 취향</em>을<br>발견해 보세요</h1>
       <p>직접 말하기 어려운 여행 취향도 있습니다.<br>몇 가지 선택만으로 당신만의 여행 DNA를 찾고,<br>그에 맞는 실제 일정까지 만들어 드립니다.</p>
-      <div class="intro-steps">
-        <div class="intro-step"><div class="num">STEP 01</div><div class="label">끌리는 장면</div></div>
-        <div class="intro-step"><div class="num">STEP 02</div><div class="label">최고의 순간</div></div>
-        <div class="intro-step"><div class="num">STEP 03</div><div class="label">싫은 것 제거</div></div>
+      <div class="intro-preset-title" style="margin:2rem 0 0.8rem;font-size:0.9rem;font-weight:600;color:var(--terra)">혹시 자기 취향을 잘 알고 계신가요?</div>
+      <div class="preset-grid">
+        ${CONFIG.PRESETS.map(p => `
+          <div class="preset-card" onclick="App.selectPreset('${p.id}')">
+            <div class="preset-emoji">${p.emoji}</div>
+            <div class="preset-info">
+              <div class="preset-title">${p.title}</div>
+              <div class="preset-desc">${p.desc}</div>
+            </div>
+            <div class="preset-arrow">→</div>
+          </div>
+        `).join('')}
       </div>
-      <button class="btn btn-primary" onclick="App.startFlow()">시작하기</button>
-      ${this._hasCachedProfile() ? `<br><button class="btn btn-ghost" style="margin-top:0.6rem;font-size:0.8rem" onclick="App.loadCachedProfile()">기존 취향으로 결과 보기</button>` : ''}
-      <div style="margin-top:.8rem;font-size:.72rem;color:var(--ink-faint)">약 3분 소요 · 결과 공유 가능</div>
+      <div style="margin:2.4rem 0 1rem;font-size:0.9rem;opacity:0.6">— 또는 —</div>
+      <button class="btn btn-primary" style="width:100%" onclick="App.startFlow()">나의 여행 DNA 정밀 분석하기</button>
+      ${this._hasCachedProfile() ? `<button class="btn btn-ghost" style="margin-top:0.6rem;font-size:0.8rem;width:100%" onclick="App.loadCachedProfile()">기존 취향으로 결과 보기</button>` : ''}
     </div>`;
+    this.setProgress(0);
+  },
+
+  selectPreset(id) {
+    const preset = CONFIG.PRESETS.find(p => p.id === id);
+    if (!preset) return;
+    
+    AppState.presetId = id;
+    // 분석 효과를 잠깐 보여주기 위해 sLoad 화면으로 전환
+    this.showScreen('sLoad');
+    this.setProgress(82);
+
+    document.getElementById('sLoad').innerHTML = `<div class="ld-wrap">
+      <div class="ld-spinner"></div>
+      <div class="ld-txt">'${preset.title}' 테마를 불러오고 있습니다</div>
+      <div class="ld-sub">당신을 위한 최적의 여행 DNA를 조합 중...</div>
+    </div>`;
+    this.showScreen('sLoad');
+
+    setTimeout(() => {
+      AppState.currentProfile = JSON.parse(JSON.stringify(preset.profile));
+      localStorage.setItem('travel_dna_profile', JSON.stringify(AppState.currentProfile));
+      this.renderResult(AppState.currentProfile);
+    }, 1200);
   },
 
   /* ── AB ── */
@@ -525,6 +684,12 @@ const App = {
   /* ── RESULT ── */
   renderResult(p) {
     this.setProgress(100);
+    const dna = document.getElementById('vDNA');
+    if (dna) dna.classList.add('v-reveal');
+    const bg = document.getElementById('vBackground');
+    if (bg) bg.classList.add('bg-bright');
+
+    const { companion } = AppState;
     const dimColors = ['#C4704B','#7A9A7E','#C4A84B','#9A7AB4'];
     
     // 주 색상 결정 (DNA 기반)
@@ -775,19 +940,33 @@ const App = {
   },
 
   /* ── ITINERARY API ── */
+  _getItinCacheKey(city, dur, profile) {
+    const dnaKey = profile ? profile.typeName : 'default';
+    return `itin_cache_${city}_${dur}_${dnaKey}`.replace(/\s+/g, '_');
+  },
+
   async generateItinerary() {
     const custom = document.getElementById('customCity').value.trim();
     const city = custom || AppState.selectedCity;
     if (!city) { alert('여행지를 선택하거나 입력해 주세요.'); return; }
 
-    const { calSelected, selectedNegatives: neg, companion, accOrder } = AppState;
+    const { calSelected, selectedNegatives: neg, companion, currentProfile: p } = AppState;
     const dateStr = calSelected
       ? `${calSelected.getFullYear()}-${String(calSelected.getMonth()+1).padStart(2,'0')}-${String(calSelected.getDate()).padStart(2,'0')}`
       : '미정';
     const dur      = document.getElementById('planDur').value;
     const wish     = document.getElementById('planWish').value.trim();
-    const compLabel = CONFIG.COMPANION_LABELS[companion] || '미선택';
-    const p        = AppState.currentProfile;
+
+    // 1. 캐시 확인
+    const cacheKey = this._getItinCacheKey(city, dur, p);
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        const it = JSON.parse(cached);
+        this.renderItinerary(it, city, dur, dateStr);
+        return;
+      } catch(e) { localStorage.removeItem(cacheKey); }
+    }
 
     // ── 로딩 화면 ──
     this._showItinSkeleton(city, dur);
@@ -871,10 +1050,14 @@ const App = {
       ? `\n[도시 배경 정보]\n분위기: ${AppState.cityData.description}\n주요 감각: 시각(${AppState.cityData.senses?.sight||''}), 청각(${AppState.cityData.senses?.sound||''}), 후각(${AppState.cityData.senses?.smell||''})${citySpots}`
       : '';
 
+    const costLevel = CONFIG.CITY_COSTS[mappedId] || 3;
+    const levelMap = { 1: '매우 저렴', 2: '저렴', 3: '보통', 4: '비쌈', 5: '매우 비쌈' };
+    const costHint = `이 도시의 물가 수준은 5점 만점에 ${costLevel}점(${levelMap[costLevel]}) 입니다.`;
+
     const prompt = `여행 일정 전문가. 실제 존재하는 장소(정확한 상호명·주소·가격 포함)로 JSON만 출력. 설명 없이 JSON만. ${cityContext}
 여행자:${p?.typeName||''}의 성향을 최우선 반영하여 장소 선정. 
 기피(반드시 제외):${neg.join(',')||'없음'}
-여행지:${city} / 출발일:${dateStr} / 기간:${dur}일 / 요청:${wish||'없음'}
+여행지:${city} / 출발일:${dateStr} / 기간:${dur}일 / 요청:${wish||'없음'} / 물가참고:${costHint}
 규칙: 
 1. 하루 5~7개 spot(오전·점심·오후·저녁·야간 포함). 
 2. [중요] '실제장소명', '주소|가격' 같은 견본 텍스트를 그대로 쓰지 말고, 반드시 실제 존재하는 구체적인 상호명과 정보를 입력할 것. 
@@ -925,7 +1108,12 @@ const App = {
 
       // 완성된 JSON 파싱 및 렌더링
       const clean = buffer.replace(/```json|```/g, '').trim();
-      this.renderItinerary(JSON.parse(clean), city, dur, dateStr);
+      const it = JSON.parse(clean);
+      
+      // 캐시에 저장 (속도 최적화)
+      localStorage.setItem(cacheKey, JSON.stringify(it));
+      
+      this.renderItinerary(it, city, dur, dateStr);
 
     } catch(e) {
       console.error(e);
@@ -937,40 +1125,57 @@ const App = {
   _updateStreamProgress(buf) {
     const days = (buf.match(/"day"\s*:/g) || []).length;
     const sub = document.getElementById('ldSub');
-    if (sub && days > 0) sub.textContent = `Day ${days} 생성 중...`;
+    const prog = document.getElementById('ldDetailMsg');
+    
+    if (sub) {
+      if (days > 0) sub.textContent = `Day ${days} 일정을 상세 설계 중...`;
+      else sub.textContent = `기본 동선을 구성하는 중...`;
+    }
+
+    if (prog) {
+      const stepCount = Math.floor(buf.length / 400); 
+      const steps = [
+        "취향 포인트 분석 중...",
+        "현지 베스트 스팟 매핑...",
+        "최적 이동 경로 계산 중...",
+        "날씨와 물가 정보 업데이트...",
+        "식도락 가이드 구성 중...",
+        "최종 여정 브리핑 작성 중..."
+      ];
+      prog.textContent = steps[Math.min(stepCount, steps.length - 1)];
+    }
+
+    if (days > 0) {
+      const el = document.getElementById(`day-prog-${days}`);
+      if (el && !el.classList.contains('active')) {
+        el.classList.add('active');
+        el.style.background = 'var(--terra)';
+        el.style.color = 'white';
+        el.style.boxShadow = '0 0 10px rgba(196,112,75,0.4)';
+      }
+    }
   },
 
   // 스켈레톤 로딩 화면 (스트리밍 시작 전 즉시 표시)
   _showItinSkeleton(city, dur) {
     document.getElementById('sLoad').innerHTML = `<div class="ld-wrap">
       <div class="ld-spinner"></div>
-      <div class="ld-txt">${city} 일정을 만들고 있습니다</div>
-      <div class="ld-sub" id="ldSub">연결 중...</div>
-      <div class="ld-insight" style="display:block;margin-top:1.6rem">
-        <div class="ld-insight-label">생성 현황 ✦</div>
-        <div class="ld-insight-msg" id="ldProgress">
+      <div class="ld-txt">${city} 맞춤 여정 설계</div>
+      <div class="ld-sub" id="ldSub">성향 데이터를 분석 중입니다</div>
+      <div style="font-size:0.75rem; color:var(--terra-light); margin-top:0.4rem; height:1rem;" id="ldDetailMsg">AI 알고리즘이 가동 중입니다...</div>
+      <div class="ld-insight" style="display:block;margin-top:1.6rem; background:rgba(245,240,232,0.02)">
+        <div class="ld-insight-label">JOURNEY PROGRESS ✦</div>
+        <div class="ld-insight-msg" id="ldProgress" style="display:flex; flex-wrap:wrap; justify-content:center; gap:0.4rem; margin-top:1rem;">
           ${Array.from({length: parseInt(dur)}, (_, i) =>
-            `<span id="day-prog-${i+1}" style="display:inline-block;margin:.15rem .3rem;font-size:.72rem;
-              padding:.2rem .6rem;border-radius:10px;background:rgba(245,240,232,.04);
-              border:1px solid rgba(245,240,232,.08);color:var(--ink-faint)">
-              Day ${i+1}
+            `<span id="day-prog-${i+1}" style="display:inline-block; font-size:.65rem; font-family:'JetBrains Mono',monospace;
+              padding:.3rem .8rem; border-radius:8px; background:rgba(245,240,232,.04);
+              border:1px solid rgba(245,240,232,.08); color:var(--ink-faint); transition:all 0.4s ease;">
+              DAY ${i+1}
             </span>`).join('')}
         </div>
       </div>
     </div>`;
     this.showScreen('sLoad');
-
-    // Day 칩 순차 점등 애니메이션 (시각적 피드백)
-    let lit = 0;
-    this._skelTimer = setInterval(() => {
-      const el = document.getElementById(`day-prog-${++lit}`);
-      if (el) {
-        el.style.background = 'rgba(196,112,75,.12)';
-        el.style.borderColor = 'rgba(196,112,75,.35)';
-        el.style.color = 'var(--terra-light)';
-      }
-      if (lit >= parseInt(dur)) clearInterval(this._skelTimer);
-    }, 900);
   },
 
   /* ── RENDER ITINERARY ── */
@@ -1124,17 +1329,55 @@ const App = {
       palette: ['#C4704B','#6B8BA4','#7A9A7E'], 
       cityTagline: `${city}에서 보내는 ${dur}일간의 발견`, 
       heroEmoji: '🗺️',
-      budgetPerDay: {food:40000,transport:15000,entrance:15000}, 
+      budgetPerDay: this._calculateDynamicBudget(mappedId), 
       days,
       tips: `[안내] 현재 AI 연결이 원활하지 않아 ${city}의 핵심 명소를 기반으로 전형적인 일정을 구성했습니다.`
     }, city, dur, dateStr);
   },
 
+  _calculateDynamicBudget(mappedId) {
+    const level = CONFIG.CITY_COSTS[mappedId] || 3;
+    // 기본값 (Level 3 기준)
+    let food = 50000, transport = 15000, entrance = 20000;
+    
+    // 물가 지수에 따른 보정
+    const multiplier = { 1: 0.5, 2: 0.7, 3: 1, 4: 1.5, 5: 2.2 }[level];
+    
+    return {
+      food: Math.round(food * multiplier / 100) * 100,
+      transport: Math.round(transport * multiplier / 100) * 100,
+      entrance: Math.round(entrance * multiplier / 100) * 100
+    };
+  },
+
+  _guessArchetype() {
+    const ch = AppState.choices;
+    const dims = Object.keys(ch);
+    if (dims.length === 0) return null;
+
+    // Simple heuristic based on partial choices
+    let scores = { zen: 0, local: 0, bold: 0, flaneur: 0 };
+    
+    if (ch.crowd === 'b') scores.zen += 2;
+    if (ch.pace === 'b') scores.zen += 1;
+    
+    if (ch.local === 'b') scores.local += 2;
+    if (ch.dining === 'b') scores.local += 1;
+    
+    if (ch.pace === 'a') scores.bold += 2;
+    if (ch.discovery === 'a') scores.bold += 1;
+    
+    if (ch.culture === 'a') scores.flaneur += 1;
+    if (ch.nature === 'b') scores.flaneur += 1;
+
+    const top = Object.entries(scores).sort((a, b) => b[1] - a[1])[0];
+    return top[1] > 0 ? top[0] : 'flaneur';
+  },
+
   /* ── INIT ── */
   init() {
+    this.setProgress(0);
     this.renderIntro();
   }
 };
-
-/* 전역 진입점 */
-window.onload = () => App.init();
+App.init();
